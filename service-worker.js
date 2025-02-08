@@ -1,4 +1,4 @@
-const custom_offline_page = "PlusCodeTrimmerV9.html"
+const custom_offline_page = "index.html"
 
 self.addEventListener('install', event => {
   event.waitUntil(
