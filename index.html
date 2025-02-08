@@ -261,11 +261,11 @@
           const input = text.area.elem.value;
           const result = text.input.elem;
           if(input.includes('+') && input.length > 4){
-            /* G53X+QRG Binangonan, Rizal */
+            /* M22W+2RM Quezon City, Metro Manila */
             if(input.includes(' ')){
               let trimmed;
               trimmed = input.slice(0, input.indexOf(' '));
-              /* G53X+QRG, (no space)*/
+              /* M22W+2RM, (no space)*/
               if(trimmed.includes(',')){
                 trimmed = trimmed.slice(0, trimmed.indexOf(','));
               }
@@ -273,7 +273,7 @@
               /* Auto copies the result */
               text.input.Copy();
             }
-            /* G53X+QRG, (no space)*/
+            /* M22W+2RM, (no space)*/
             else if(input.includes(',')){
               result.value = input.slice(0, input.indexOf(','));
               text.input.Copy();
