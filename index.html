@@ -474,6 +474,18 @@
             program.ConsoleInfo();
           };
         },
+        InitServiceWorker: function(){
+          /* not my code */
+          if('serviceWorker' in navigator){
+            navigator.serviceWorker.register('./service-worker.js').
+              then(function(registration){
+                console.log('Service worker started');
+              }).
+              catch(function(error){
+                console.log('Service worker failed, error:', error);
+              });
+          }
+        },
         Main: function(){
           screen.text.area.onUserInput();
           screen.text.input.PreventInput();
@@ -485,22 +497,15 @@
           screen.button.info.onDoubleTap();
           screen.onTapHold();
           program.onResize();
+          program.InitServiceWorker();
         }
       };
       
       program.onInit();
       program.Main();
-
-      /* not my code */
-      if('serviceWorker' in navigator){
-        navigator.serviceWorker.register('./service-worker.js').
-          then(function(registration){
-            console.log('Service worker started');
-          }).
-          catch(function(error){
-            console.log('Service worker failed, error:', error);
-          });
-      }
     </script>
   </body>
 </html>
+
+<!--scissor image source:
+<a href="https://www.flaticon.com/free-icons/scissors" title="scissors icons">Scissors icons created by Gulraiz - Flaticon</a>-->
