@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content=
+      "width=device-width, user-scalable=no">
+    <meta name="mobile-web-app-capable" 
+      content="yes">
+    <style>
+      body {
+        box-sizing: border-box;
+        margin: 0;
+        display: flex;
+        /* border: 4px solid magenta; */
+      }
+      div {
+        /* border: 2px solid cyan; */
+      }
+      #dcontainer {
+        flex-grow: 1;
+        background-image: url('bgv3.jpg');
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+        /* border: 3px solid blue; */
+      }
+      #dtitle{
+        display: flex;
+        justify-content: center;
+        & > img {
+          width: 90vw;
+          margin-top: 18px;
+        }
+      }
+      .dtextfield {
+        display: flex;
+        justify-content: center;
+        & > textarea, > input {
+          font-size: 39px;
+          width: 90%;
+          border-radius: 12px;
+          border: 3px solid black;
+          background-color: #f0f0f5;
+          margin-top: 15px;
+          &:focus {
+            border-color: #00ff00;
+            outline: none;
+          }
+        }
+        & > textarea {
+          font-family: Impact;
+          letter-spacing: -2px;
+        }
+        & > input {
+          height: 63px;
+        }
+      }
+      #dbuttons {
+        display: flex;
+        justify-content: center;
+        column-gap: 15px;
+        & > button {
+          width: 88px;
+          height: 57px;
+          font-size: 13pt;
+          color: white;
+          border: 2.5px solid white;
+          border-radius: 20px;
+          font-weight: bold;
+          background: linear-gradient(45deg, rgba(110,190,243,1) 0%, rgba(49,75,224,0.9772332011789515) 50%, rgba(162,88,242,1) 100%);
+          &:active {
+            border-color: red;
+            color: red;
+            width: 78px;
+            height: 47px;
+            border-radius: 15px;
+            font-size: 11.5pt;
+            margin: 5px;
+          }
+        }
+      }
+      #dinfoBtn {
+        display: flex;
+        & > button {
+          display: flex;
+          border-radius: 50%;
+          padding: 0;
+          border: 1.5px solid white;
+          margin-left: auto;
+          margin-bottom: 1.5%;
+          margin-right: 1.5%;
+          & > img {
+            width: 25px;
+          }
+        }
+      }
+      p {
+        position: absolute;
+        color: white;
+        background-color: black;
+        text-align: center;
+        padding: 5px;
+        border: 2.5px solid salmon;
+        border-radius: 15px;
+        margin-left: 15px;
+        margin-right: 15px;
+        display: none;
+        & > .shighlight {
+          color: salmon;
+          font-weight: bold;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="dcontainer">
+      <div id="dtitle">
+        <img src="titlev3.png">
+      </div>
+      <div class="dtextfield" id="dtextarea">
+        <textarea id="userInput" 
+          placeholder="Input" 
+            spellcheck="false"></textarea>
+        <p> <!--textarea tooltip text-->
+          Place the full Plus Code here ex: 
+          <span class="shighlight">M22W+2RM 
+          Quezon City, Metro Manila</span>
+          That address gets trimmed into this: 
+          <span class="shighlight">M22W+2RM</span> 
+          Leaving out the others. It can handle 
+          that and any of these: <span 
+            class="shighlight">M22W+2RM, / 
+          M22W+2RM(space) / M22W+2RM, Quezon 
+          City, Metro Manila</span>
+        </p>
+      </div>
+      <div class="dtextfield" id="dinput">
+        <input type="text" id="result" 
+          placeholder="Result" 
+            spellcheck="false">
+        <p> <!--input/result tooltip text-->
+          When a legit Plus Code is inputted, 
+          it gets inputted here automagically.
+          It also gets copied the same adverb.
+        </p>
+      </div>
+      <div style="height:15px;">
+        <!--empty div as spacer | 
+        inline CSS USAGE EXCEPTION!-->
+      </div>
+      <div id="dbuttons">
+        <button id="copy">COPY</button>
+        <button id="share">SHARE</button>
+        <button id="clear">CLEAR</button>
+        <p> <!--buttons tooltip text-->
+          Pressing <span class="shighlight"
+            >COPY</span> copies the 
+          trimmed/result code again.
+          <span class="shighlight">SHARE</span> 
+          allows you to send the trimmed code 
+          directly to another app specifically 
+          OSMAnd App. Please just press 
+          <span class="shighlight">CLEAR</span> 
+          if you wanna clear out contents 
+          instead of using BACKSPACE
+        </p>
+      </div>
+      <div style="flex-grow:1;">
+        <!--empty div as spacer |
+        inline CSS USAGE EXCEPTION!-->
+      </div>
+      <div id="dinfoBtn">
+        <button>
+          <img src="info50.png">
+        </button>
+      </div>
+    </div>
+    <script>
+      const border = {
+        isHidden: function(){
+          return (window.getComputedStyle(document.body).
+            getPropertyValue('border-width') === '0px');
+        },
+        Show: function(){
+          document.body.style['border'] = 
+            '4px solid magenta';
+          document.getElementById('dcontainer').
+            style['border'] = '3px solid blue';
+          const divs = document.querySelectorAll('div:not(#dcontainer)');
+          for(let i = 0; i < divs.length; i++){
+            divs[i].style['border'] = 
+              '2px solid cyan';
+          }
+        },
+        Hide: function(){
+          document.body.style['border'] = 'none';
+          const divs = document.querySelectorAll('div');
+          for(let i = 0; i < divs.length; i++){
+            divs[i].style['border'] = 'none';
+          }
+        }
+      };
+      
+      const fullscreen = {
+        isDisabled: function(){
+          return (document.fullscreenElement === null);
+        },
+        Enter: function(){
+          document.documentElement.requestFullscreen().
+          then(()=>console.log('fullscreen.Enter() success')).
+          catch((err)=>alert(
+            'fullscreen.Enter() failed\n' +
+            err
+          ));
+        },
+        Exit: function(){
+          document.exitFullscreen();
+        }
+      };
+      
+      const text = {
+        area: {
+          elem: document.getElementById('userInput'),
+          isNotEmpty: function(){
+            return (text.area.elem.value.length > 0);
+          }
+        },
+        input: {
+          elem: document.getElementById('result'),
+          isNotEmpty: function(){
+            return (text.input.elem.value.length > 0);
+          },
+          Copy: function(){
+            if(text.input.isNotEmpty()){
+              text.input.elem.select();
+              document.execCommand('copy');
+              text.input.elem.blur();
+              navigator.vibrate(30);
+            }
+          },
+          Share: function(){
+            if(text.input.isNotEmpty()){
+              navigator.share({
+                text: text.input.elem.value
+              });
+              navigator.vibrate(50);
+            }
+          }
+        },
+        Clear: function(){
+          if(text.area.isNotEmpty()){
+            text.area.elem.value = '';
+            navigator.vibrate(50);
+          }
+          if(text.input.isNotEmpty()){
+            text.input.elem.value = '';
+            navigator.vibrate(50);
+          }
+        },
+        TrimUserInput: function(){
+          const input = text.area.elem.value;
+          const result = text.input.elem;
+          if(input.includes('+') && input.length > 4){
+            /* G53X+QRG Binangonan, Rizal */
+            if(input.includes(' ')){
+              let trimmed;
+              trimmed = input.slice(0, input.indexOf(' '));
+              /* G53X+QRG, (no space)*/
+              if(trimmed.includes(',')){
+                trimmed = trimmed.slice(0, trimmed.indexOf(','));
+              }
+              result.value = trimmed;
+              /* Auto copies the result */
+              text.input.Copy();
+            }
+            /* G53X+QRG, (no space)*/
+            else if(input.includes(',')){
+              result.value = input.slice(0, input.indexOf(','));
+              text.input.Copy();
+            }
+          }
+        },
+        Disable: function(){
+          text.area.elem.readOnly = true;
+          text.input.elem.readOnly = true;
+        },
+        Enable: function(){
+          text.area.elem.readOnly = false;
+          text.input.elem.readOnly = false;
+        }
+      };
+      
+      const tooltip = {
+        enable: false,
+        p: document.querySelectorAll('p'),
+        rePosition: function(){
+          tooltip.p.forEach(function(p){
+            const rect = p.parentElement.getBoundingClientRect();
+            p.style['top'] = `${rect.y + rect.height}px`;
+          });
+        },
+        isVisible: function(para){
+          return (para.clientHeight > 0);
+        },
+        Show: function(para){
+          para.style['display'] = 'initial';
+        },
+        Hide: function(para){
+          para.style['display'] = 'none';
+        },
+        HideAllExcept: function(para){
+          for(let i = 0; i < tooltip.p.length; i++){
+            if(tooltip.p[i] === para) {
+              continue;
+            }
+            else if(tooltip.isVisible(tooltip.p[i])){
+              tooltip.Hide(tooltip.p[i]);
+            }
+          }
+        },
+        HideAll: function(){
+          tooltip.p.forEach(function(p){
+            if(tooltip.isVisible(p)){
+              tooltip.Hide(p);
+            }
+          });
+        },
+        Process: function(para){
+          if(!tooltip.isVisible(para)){
+            tooltip.Show(para);
+            tooltip.HideAllExcept(para);
+          }
+          else {
+            tooltip.Hide(para);
+          }
+        },
+        onTap: function(){
+          document.addEventListener('click', function(evt){
+            if(tooltip.enable){
+              const buttonsDiv = document.getElementById('dbuttons');
+              if(evt.target === text.area.elem){
+                tooltip.Process(tooltip.p[0]);
+              }
+              else if(evt.target === text.input.elem){
+                tooltip.Process(tooltip.p[1]);
+              }
+              else if(evt.target.parentElement === buttonsDiv || 
+                evt.target === buttonsDiv){
+                  tooltip.Process(tooltip.p[2]);
+              }
+            }
+          });
+        }
+      };
+    
+      const screen = {
+        toViewportHeight: function(){
+          document.body.style['height'] = 
+            `${window.innerHeight}px`;
+        },
+        text: {
+          area: {
+            onUserInput: function(){
+              text.area.elem.oninput = 
+                text.TrimUserInput;
+            }
+          },
+          input: {
+            PreventInput: function(){
+              text.input.elem.onkeydown = function(){
+                this.readOnly = true;
+              };
+              text.input.elem.onkeyup = function(){
+                this.readOnly = false;
+              };
+            }
+          }
+        },
+        button: {
+          copy: {
+            onClick: function(){
+              document.getElementById('copy').
+                onclick = function(){
+                  text.input.Copy();
+                };
+            }
+          },
+          share: {
+            onClick: function(){
+              document.getElementById('share').
+                onclick = function(){
+                  text.input.Share();
+                };
+            }
+          },
+          clear: {
+            onClick: function(){
+              document.getElementById('clear').
+                onclick = function(){
+                  text.Clear();
+                };
+            }
+          },
+          info: {
+            elem: document.querySelector('#dinfoBtn>button'),
+            onDoubleTap: function(){
+              screen.button.info.elem.
+                ondblclick = function(){
+                  (border.isHidden()) ?
+                    border.Show() : border.Hide();
+                };
+            },
+            onTap: function(){
+              screen.button.info.elem.
+                addEventListener('click', function(){
+                  if(!tooltip.enable){
+                    tooltip.enable = true;
+                    text.Disable();
+                  }
+                  else {
+                    tooltip.enable = false;
+                    text.Enable();
+                    tooltip.HideAll();
+                  }
+                  
+                  tooltip.onTap();
+                  navigator.vibrate(30);
+                });
+            }
+          }
+        },
+        emptySpace: {
+          onDoubleTap: function(){
+            document.querySelector('div[style="flex-grow:1;"]').
+              ondblclick = function(){
+                (fullscreen.isDisabled()) ?
+                  fullscreen.Enter() : fullscreen.Exit();
+              };
+          }
+        },
+        onTapHold: function(){
+          document.addEventListener('contextmenu', 
+            function(evt){
+              switch(evt.target.tagName){
+                case 'IMG':
+                case 'BUTTON':
+                  evt.preventDefault();
+                  break;
+              }
+            });
+        }
+      };
+      
+      const program = {
+        ConsoleInfo: function(){
+          console.log(
+            `\n` +
+            `innerWidth: ${window.innerWidth}\n` +
+            `innerHeight: ${window.innerHeight}\n`
+          );
+        },
+        onInit: function(){
+          window.addEventListener('load', function(){
+            screen.toViewportHeight();
+            tooltip.rePosition();
+            program.ConsoleInfo();
+          });
+        },
+        onResize: function(){
+          window.onresize = function(){
+            screen.toViewportHeight();
+            tooltip.rePosition();
+            program.ConsoleInfo();
+          };
+        },
+        Main: function(){
+          screen.text.area.onUserInput();
+          screen.text.input.PreventInput();
+          screen.button.copy.onClick();
+          screen.button.share.onClick();
+          screen.button.clear.onClick();
+          screen.emptySpace.onDoubleTap();
+          screen.button.info.onTap();
+          screen.button.info.onDoubleTap();
+          screen.onTapHold();
+          program.onResize();
+        }
+      };
+      
+      program.onInit();
+      program.Main();
+    </script>
+  </body>
+</html>
