@@ -5,6 +5,7 @@
       "width=device-width, user-scalable=no">
     <meta name="mobile-web-app-capable" 
       content="yes">
+    <link rel="manifest" href="./manifest.json">
     <style>
       body {
         box-sizing: border-box;
@@ -488,6 +489,16 @@
       
       program.onInit();
       program.Main();
+
+      if('serviceWorker' in navigator){
+        navigator.serviceWorker.register('/service-worker.js').
+          then(function(registration){
+            console.log('Service worker started');
+          }).
+          catch(function(error){
+            console.log('Service worker failed, error:', error);
+          });
+      }
     </script>
   </body>
 </html>
